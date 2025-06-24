@@ -17,23 +17,19 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
-      - name: Download JUnit 5 jars
+      - name: Download JUnit 5 Console Standalone Jar
         run: |
-          mkdir libs
-          curl -L -o libs/junit-jupiter-api-5.9.3.jar https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-api/5.9.3/junit-jupiter-api-5.9.3.jar
-          curl -L -o libs/junit-jupiter-engine-5.9.3.jar https://repo1.maven.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.9.3/junit-jupiter-engine-5.9.3.jar
-          curl -L -o libs/apiguardian-api-1.1.2.jar https://repo1.maven.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar
-          curl -L -o libs/opentest4j-1.2.0.jar https://repo1.maven.org/maven2/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar
-          curl -L -o libs/junit-platform-commons-1.9.3.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-commons/1.9.3/junit-platform-commons-1.9.3.jar
+          mkdir -p libs
+          curl -L -o libs/junit-platform-console-standalone-1.9.3.jar https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.9.3/junit-platform-console-standalone-1.9.3.jar
 
       - name: Compile Java files
         run: |
           mkdir -p out
-          javac -cp "libs/*" -d out $(find src test -name "*.java")
+          javac -cp libs/junit-platform-console-standalone-1.9.3.jar -d out $(find src test -name "*.java")
 
       - name: Run tests
         run: |
-          java -cp "out:libs/*" org.junit.platform.console.ConsoleLauncher --scan-classpath
+          java -jar libs/junit-platform-console-standalone-1.9.3.jar --class-path out --scan-class-path
